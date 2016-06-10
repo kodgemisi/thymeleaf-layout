@@ -50,7 +50,7 @@ public class ThymeleafLayoutInterceptor extends HandlerInterceptorAdapter {
             return;
         }
         String originalViewName = modelAndView.getViewName();
-        if (isRedirectOrForward(originalViewName)) {
+        if (shouldDecorationAvoided(originalViewName)) {
             return;
         }
 
@@ -65,11 +65,15 @@ public class ThymeleafLayoutInterceptor extends HandlerInterceptorAdapter {
         modelAndView.setViewName(layoutName);
         modelAndView.addObject(this.viewAttributeName, originalViewName);
     }
- 
-    private boolean isRedirectOrForward(String viewName) {
-        return viewName.startsWith("redirect:") || viewName.startsWith("forward:");
+
+    /**
+     * @param viewName
+     * @return true if this view shouldn't be decorated
+     */
+    private boolean shouldDecorationAvoided(String viewName) {
+        return viewName.startsWith("redirect:") || viewName.startsWith("forward:") || viewName.equals("error");
     }
- 
+
     private String getLayoutName(Object handler) {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Layout layout = getMethodOrTypeAnnotation(handlerMethod);
